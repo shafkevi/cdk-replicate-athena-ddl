@@ -1,3 +1,9 @@
+/* TODO:
+  Add workgroup replication
+  Add Database Replication -- Glue
+  Add Table Replication (Partitions)-- Glue
+*/
+
 import path from "path";
 import { Function, Runtime, Code } from "@aws-cdk/aws-lambda";
 import { Aws, Construct } from "@aws-cdk/core";
@@ -12,18 +18,22 @@ export default class Template extends Construct {
     super(scope, id);
     const {  } = props;
 
-    const lambdaFn = new Function(this, "AthenaDDLReplicator", {
+    const athenaDDLReplicatorFn = new Function(this, "AthenaDDLReplicator", {
       runtime: Runtime.PYTHON_3_8,
       handler: "index.handler",
       code: Code.fromAsset(path.join(__dirname, "..", "..", "src", "lambda", "athenaReplicator")),
+      environment: {
+        REGION: Aws.REGION,
+        REGIONS: process.env.REGIONS || ""
+      }
     });
 
-    lambdaFn.addToRolePolicy(new PolicyStatement({
+    athenaDDLReplicatorFn.addToRolePolicy(new PolicyStatement({
       resources: ["*"],
       actions: ["athena:*"],
     }));
 
-    const eventTarget = new LambdaFunction(lambdaFn);
+    const eventTarget = new LambdaFunction(athenaDDLReplicatorFn);
 
     const eventRule = new Rule(this, "AthenaDDLRule", {
       eventPattern: {
