@@ -2,6 +2,7 @@
   Add workgroup replication
   Add Database Replication -- Glue
   Add Table Replication (Partitions)-- Glue
+  https://docs.aws.amazon.com/glue/latest/dg/automating-awsglue-with-cloudwatch-events.html
 */
 
 import path from "path";
